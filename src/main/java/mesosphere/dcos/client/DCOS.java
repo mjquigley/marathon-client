@@ -31,7 +31,7 @@ import mesosphere.marathon.client.model.v2.Result;
 @Headers({ "Content-Type: application/json", "Accept: application/json" })
 public interface DCOS extends Marathon {
     // DCOS Auth
-    @RequestLine("GET /acs/api/v1/auth/login")
+    @RequestLine("POST /acs/api/v1/auth/login")
     @Headers(HeaderUtils.AUTH_API_SOURCE_HEADER)
     AuthenticateResponse authenticate(DCOSAuthCredentials credentials) throws DCOSException;
 
