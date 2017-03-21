@@ -6,36 +6,17 @@ import java.util.Map;
 import mesosphere.client.common.ModelUtils;
 
 public class Port {
-    private Integer containerPort;
-    private Integer hostPort;
-    private Integer servicePort;
+    private Integer number;
     private String protocol;
     private String name;
-
     private Map<String, String> labels = new HashMap<>();
 
-    public Integer getContainerPort() {
-        return containerPort;
+    public Integer getNumber() {
+        return number;
     }
 
-    public void setContainerPort(Integer containerPort) {
-        this.containerPort = containerPort;
-    }
-
-    public Integer getHostPort() {
-        return hostPort;
-    }
-
-    public void setHostPort(Integer hostPort) {
-        this.hostPort = hostPort;
-    }
-
-    public Integer getServicePort() {
-        return servicePort;
-    }
-
-    public void setServicePort(Integer servicePort) {
-        this.servicePort = servicePort;
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public String getProtocol() {
@@ -54,16 +35,16 @@ public class Port {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return ModelUtils.toString(this);
-    }
-
     public Map<String, String> getLabels() {
         return labels;
     }
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public String toString() {
+        return ModelUtils.toString(this);
     }
 }
