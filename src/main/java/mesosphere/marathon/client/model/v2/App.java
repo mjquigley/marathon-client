@@ -41,14 +41,14 @@ public class App {
 	private Container container;
 	private Map<String, Object> env;
 	private Map<String, String> labels;
-	private String ipAddress;
+	private AppIpAddress ipAddress;
 	private String version;
-	private String residency;
+	private Residency residency;
 	private Integer taskKillGracePeriodSeconds;
 	private Map<String, SecretSource> secrets;
 	private String executor;
-    private List<Fetchable> fetch;
-    private List<String> storeUrls;
+	private List<Fetchable> fetch;
+	private List<String> storeUrls;
 	private List<Integer> ports;
 	private List<PortDefinition> portDefinitions;
 	private Boolean requirePorts;
@@ -57,13 +57,13 @@ public class App {
 	private Double backoffFactor;
 	private Integer maxLaunchDelaySeconds;
 	private Collection<Task> tasks;
-    private AppVersionInfo versionInfo;
+	private AppVersionInfo versionInfo;
 	private Integer tasksStaged;
 	private Integer tasksRunning;
 	private Integer tasksHealthy;
 	private Integer tasksUnhealthy;
 	private List<HealthCheck> healthChecks;
-	private List<Object> readinessChecks;
+	private List<ReadinessCheck> readinessChecks;
 	private UpgradeStrategy upgradeStrategy;
 
 	private List<Deployment> deployments;
@@ -208,11 +208,11 @@ public class App {
 		this.labels = labels;
 	}
 
-	public String getIpAddress() {
+	public AppIpAddress getIpAddress() {
 		return ipAddress;
 	}
 
-	public void setIpAddress(final String ipAddress) {
+	public void setIpAddress(final AppIpAddress ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
@@ -224,11 +224,11 @@ public class App {
 		this.version = version;
 	}
 
-	public String getResidency() {
+	public Residency getResidency() {
 		return residency;
 	}
 
-	public void setResidency(final String residency) {
+	public void setResidency(final Residency residency) {
 		this.residency = residency;
 	}
 
@@ -265,13 +265,13 @@ public class App {
 		this.executor = executor;
 	}
 
-    public List<Fetchable> getFetch() {
-        return fetch;
-    }
+	public List<Fetchable> getFetch() {
+		return fetch;
+	}
 
-    public void setFetch(final List<Fetchable> fetch) {
-        this.fetch = fetch;
-    }
+	public void setFetch(final List<Fetchable> fetch) {
+		this.fetch = fetch;
+	}
 
 	public List<String> getStoreUrls() {
 		return storeUrls;
@@ -368,13 +368,13 @@ public class App {
 		this.tasks = tasks;
 	}
 
-    public AppVersionInfo getVersionInfo() {
-        return versionInfo;
-    }
+	public AppVersionInfo getVersionInfo() {
+		return versionInfo;
+	}
 
-    public void setVersionInfo(final AppVersionInfo versionInfo) {
-        this.versionInfo = versionInfo;
-    }
+	public void setVersionInfo(final AppVersionInfo versionInfo) {
+		this.versionInfo = versionInfo;
+	}
 
 	public Integer getTasksStaged() {
 		return tasksStaged;
@@ -416,11 +416,11 @@ public class App {
 		this.healthChecks = healthChecks;
 	}
 
-	public List<Object> getReadinessChecks() {
+	public List<ReadinessCheck> getReadinessChecks() {
 		return readinessChecks;
 	}
 
-	public void setReadinessChecks(final List<Object> readinessChecks) {
+	public void setReadinessChecks(final List<ReadinessCheck> readinessChecks) {
 		this.readinessChecks = readinessChecks;
 	}
 
