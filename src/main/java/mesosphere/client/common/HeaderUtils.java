@@ -7,7 +7,9 @@ public class HeaderUtils {
     public static final String MARATHON_API_SOURCE = "marathon/client";
     public static final String AUTH_API_SOURCE = "auth/client";
     public static final String SECRETS_API_SOURCE = "secret/client";
+    public static final String METRONOME_API_SOURCE = "metronome/client";
     public static final String MARATHON_API_SOURCE_HEADER = API_SOURCE_HEADER + ": " + MARATHON_API_SOURCE;
     public static final String AUTH_API_SOURCE_HEADER = API_SOURCE_HEADER + ": " + AUTH_API_SOURCE;
     public static final String SECRETS_API_SOURCE_HEADER = API_SOURCE_HEADER + ": " + SECRETS_API_SOURCE;
+    public static final String METRONOME_API_SOURCE_HEADER = API_SOURCE_HEADER + ": " + METRONOME_API_SOURCE;
 }
