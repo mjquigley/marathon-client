@@ -1,7 +1,9 @@
 package mesosphere.dcos.client;
 
 import feign.Feign;
+import feign.FeignException;
 import feign.Response;
+import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
@@ -11,6 +13,8 @@ import mesosphere.dcos.client.model.DCOSAuthCredentials;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 
 public class DCOSClient {
     public static DCOS getInstance(String endpoint) {
@@ -28,7 +32,7 @@ public class DCOSClient {
         Feign.Builder builder = Feign.builder()
                 .client(HttpClientUtils.createHttpClient(config))
                 .encoder(encoder)
-                .decoder(decoder)
+                .decoder(new MesosDownloadDecoder(decoder))
                 .errorDecoder(new DCOSErrorDecoder());
 
         if (config.getCredentials() != null) {
@@ -40,6 +44,31 @@ public class DCOSClient {
         builder.requestInterceptor(new DCOSAPIInterceptor());
 
         return builder.target(DCOS.class, endpoint);
+    }
+
+    private static class MesosDownloadDecoder implements Decoder {
+        private final Decoder delegate;
+
+        MesosDownloadDecoder(final Decoder delegate) {
+            super();
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Object decode(Response response, Type type) throws IOException, FeignException {
+            if (response.headers().get("Content-Type").contains("application/octet-stream")) {
+                Reader reader = response.body().asReader();
+                int charsExpected = response.body().length();
+                char[] charArray = new char[charsExpected];
+                int charsRead = reader.read(charArray);
+
+                if (charsRead == charsExpected) {
+                    return new String(charArray);
+                }
+            }
+
+            return delegate.decode(response, type);
+        }
     }
 
     private static class DCOSErrorDecoder implements ErrorDecoder {

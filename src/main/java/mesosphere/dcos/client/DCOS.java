@@ -12,7 +12,9 @@ import mesosphere.client.common.ThrowingSupplier;
 import mesosphere.dcos.client.model.AuthenticateResponse;
 import mesosphere.dcos.client.model.DCOSAuthCredentials;
 import mesosphere.dcos.client.model.Secret;
-import mesosphere.dcos.client.model.v1.GetJobResponse;
+import mesosphere.mesos.client.model.MesosAgentState;
+import mesosphere.mesos.client.model.MesosMasterState;
+import mesosphere.metronome.client.model.v1.GetJobResponse;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.model.v2.App;
 import mesosphere.marathon.client.model.v2.DeleteAppTasksResponse;
@@ -29,9 +31,10 @@ import mesosphere.marathon.client.model.v2.GetServerInfoResponse;
 import mesosphere.marathon.client.model.v2.GetTasksResponse;
 import mesosphere.marathon.client.model.v2.Group;
 import mesosphere.marathon.client.model.v2.Result;
-import mesosphere.dcos.client.model.v1.Job;
-import mesosphere.dcos.client.model.v1.JobRun;
-import mesosphere.dcos.client.model.v1.JobSchedule;
+import mesosphere.metronome.client.model.v1.Job;
+import mesosphere.metronome.client.model.v1.JobRun;
+import mesosphere.metronome.client.model.v1.JobSchedule;
+import okio.BufferedSource;
 
 @Headers({ "Content-Type: application/json", "Accept: application/json" })
 public interface DCOS extends Marathon {
@@ -46,6 +49,22 @@ public interface DCOS extends Marathon {
     Secret getSecret(@Param("secretStore") String secretStore,
                      @Param("secretPath") String secretPath)
             throws DCOSException;
+
+    // Mesos
+    @RequestLine("GET /mesos/state.json")
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
+    MesosMasterState getMasterState() throws DCOSException;
+
+    @RequestLine("GET /agent/{agentId}/slave(1)/state.json")
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
+    MesosAgentState getAgentState(@Param("agentId") String agentId) throws DCOSException;
+
+    @RequestLine("GET /agent/{agentId}/files/download?path={path}")
+    @Headers({ "Accept: text/plain", HeaderUtils.MESOS_API_SOURCE_HEADER })
+    String getAgentSandboxFile(@Param("agentId") String agentId,
+                               @Param("path") String path)
+            throws DCOSException;
+
 
     // Apps
     /**

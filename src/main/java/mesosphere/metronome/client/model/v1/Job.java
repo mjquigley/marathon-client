@@ -1,4 +1,4 @@
-package mesosphere.dcos.client.model.v1;
+package mesosphere.metronome.client.model.v1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
