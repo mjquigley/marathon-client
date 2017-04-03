@@ -340,12 +340,22 @@ public interface DCOS extends Marathon {
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetMetricsResponse getMetrics() throws DCOSException;
 
-    default InputStream getAgentSandboxFileAsInputStream(final String agentId, final String path) throws DCOSException, IOException {
-        return getAgentSandboxFile(agentId, path).body().asInputStream();
+    default Optional<InputStream> getAgentSandboxFileAsInputStream(final String agentId, final String path) throws DCOSException, IOException {
+        final feign.Response response = getAgentSandboxFile(agentId, path);
+
+        if (response.status() == 404 || response.body() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.body().asInputStream());
     }
 
-    default String getAgentSandboxFileAsString(final String agentId, final String path) throws DCOSException {
+    default Optional<String> getAgentSandboxFileAsString(final String agentId, final String path) throws DCOSException {
         final feign.Response response = getAgentSandboxFile(agentId, path);
+
+        if (response.status() == 404 || response.body() == null) {
+            return Optional.empty();
+        }
 
         try (final Reader reader = response.body().asReader()) {
             int charsExpected = response.body().length();
@@ -353,12 +363,12 @@ public interface DCOS extends Marathon {
             int charsRead = reader.read(charArray);
 
             if (charsRead != charsExpected) {
-                return null;
+                return Optional.empty();
             }
 
-            return new String(charArray);
+            return Optional.of(new String(charArray));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return Optional.empty();
         }
     }
 
