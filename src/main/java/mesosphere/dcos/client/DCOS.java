@@ -1,5 +1,8 @@
 package mesosphere.dcos.client;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +37,6 @@ import mesosphere.marathon.client.model.v2.Result;
 import mesosphere.metronome.client.model.v1.Job;
 import mesosphere.metronome.client.model.v1.JobRun;
 import mesosphere.metronome.client.model.v1.JobSchedule;
-import okio.BufferedSource;
 
 @Headers({ "Content-Type: application/json", "Accept: application/json" })
 public interface DCOS extends Marathon {
@@ -61,8 +63,8 @@ public interface DCOS extends Marathon {
 
     @RequestLine("GET /agent/{agentId}/files/download?path={path}")
     @Headers({ "Accept: text/plain", HeaderUtils.MESOS_API_SOURCE_HEADER })
-    String getAgentSandboxFile(@Param("agentId") String agentId,
-                               @Param("path") String path)
+    feign.Response getAgentSandboxFile(@Param("agentId") String agentId,
+                                       @Param("path") String path)
             throws DCOSException;
 
 
@@ -337,6 +339,28 @@ public interface DCOS extends Marathon {
     @RequestLine("GET /metrics")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetMetricsResponse getMetrics() throws DCOSException;
+
+    default InputStream getAgentSandboxFileAsInputStream(final String agentId, final String path) throws DCOSException, IOException {
+        return getAgentSandboxFile(agentId, path).body().asInputStream();
+    }
+
+    default String getAgentSandboxFileAsString(final String agentId, final String path) throws DCOSException {
+        final feign.Response response = getAgentSandboxFile(agentId, path);
+
+        try (final Reader reader = response.body().asReader()) {
+            int charsExpected = response.body().length();
+            char[] charArray = new char[charsExpected];
+            int charsRead = reader.read(charArray);
+
+            if (charsRead != charsExpected) {
+                return null;
+            }
+
+            return new String(charArray);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     default GetJobResponse getJob(final String id, final List<String> embed) throws DCOSException {
         return getJob(id, String.join(",", embed));
