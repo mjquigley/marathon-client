@@ -64,7 +64,7 @@ public interface DCOS extends Marathon {
     MesosAgentState getAgentState(@Param("agentId") String agentId) throws DCOSException;
 
     @RequestLine("GET /agent/{agentId}/files/download?path={path}")
-    @Headers({ "Accept: text/plain", HeaderUtils.MESOS_API_SOURCE_HEADER })
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
     feign.Response getAgentSandboxFile(@Param("agentId") String agentId,
                                        @Param("path") String path)
             throws DCOSException;
