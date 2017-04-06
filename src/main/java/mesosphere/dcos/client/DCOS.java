@@ -6,6 +6,8 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
+
 import feign.Body;
 import feign.Headers;
 import feign.Param;
@@ -358,15 +360,7 @@ public interface DCOS extends Marathon {
         }
 
         try (final Reader reader = response.body().asReader()) {
-            int charsExpected = response.body().length();
-            char[] charArray = new char[charsExpected];
-            int charsRead = reader.read(charArray);
-
-            if (charsRead != charsExpected) {
-                return Optional.empty();
-            }
-
-            return Optional.of(new String(charArray));
+            return Optional.of(IOUtils.toString(reader));
         } catch (IOException e) {
             return Optional.empty();
         }
