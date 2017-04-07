@@ -1,8 +1,14 @@
 package mesosphere.dcos.client;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
+
+import feign.Body;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
@@ -11,6 +17,9 @@ import mesosphere.client.common.ThrowingSupplier;
 import mesosphere.dcos.client.model.AuthenticateResponse;
 import mesosphere.dcos.client.model.DCOSAuthCredentials;
 import mesosphere.dcos.client.model.Secret;
+import mesosphere.mesos.client.model.MesosAgentState;
+import mesosphere.mesos.client.model.MesosMasterState;
+import mesosphere.metronome.client.model.v1.GetJobResponse;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.model.v2.App;
 import mesosphere.marathon.client.model.v2.DeleteAppTasksResponse;
@@ -27,6 +36,9 @@ import mesosphere.marathon.client.model.v2.GetServerInfoResponse;
 import mesosphere.marathon.client.model.v2.GetTasksResponse;
 import mesosphere.marathon.client.model.v2.Group;
 import mesosphere.marathon.client.model.v2.Result;
+import mesosphere.metronome.client.model.v1.Job;
+import mesosphere.metronome.client.model.v1.JobRun;
+import mesosphere.metronome.client.model.v1.JobSchedule;
 
 @Headers({ "Content-Type: application/json", "Accept: application/json" })
 public interface DCOS extends Marathon {
@@ -41,6 +53,22 @@ public interface DCOS extends Marathon {
     Secret getSecret(@Param("secretStore") String secretStore,
                      @Param("secretPath") String secretPath)
             throws DCOSException;
+
+    // Mesos
+    @RequestLine("GET /mesos/state.json")
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
+    MesosMasterState getMasterState() throws DCOSException;
+
+    @RequestLine("GET /agent/{agentId}/slave(1)/state.json")
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
+    MesosAgentState getAgentState(@Param("agentId") String agentId) throws DCOSException;
+
+    @RequestLine("GET /agent/{agentId}/files/download?path={path}")
+    @Headers(HeaderUtils.MESOS_API_SOURCE_HEADER)
+    feign.Response getAgentSandboxFile(@Param("agentId") String agentId,
+                                       @Param("path") String path)
+            throws DCOSException;
+
 
     // Apps
     /**
@@ -230,6 +258,81 @@ public interface DCOS extends Marathon {
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     void deleteQueueDelay(@Param("appId") String appId) throws DCOSException;
 
+    // Jobs
+    @RequestLine("GET /v1/jobs")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    List<GetJobResponse> getJobs() throws DCOSException;
+
+    @RequestLine("GET /v1/jobs?embed={embed}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    List<GetJobResponse> getJobs(@Param("embed") String embed) throws DCOSException;
+
+    @RequestLine("POST /v1/jobs")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    Job createJob(Job job) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    GetJobResponse getJob(@Param("jobId") String jobId) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}?embed={embed}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    GetJobResponse getJob(@Param("jobId") String jobId, @Param("embed") String embed) throws DCOSException;
+
+    @RequestLine("PUT /v1/jobs/{jobId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void updateJob(@Param("jobId") String jobId, Job job) throws DCOSException;
+
+    @RequestLine("DELETE /v1/jobs/{jobId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void deleteJob(@Param("jobId") String jobId, Job job) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}/schedules")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    List<JobSchedule> getJobSchedules(@Param("jobId") String jobId) throws DCOSException;
+
+    @RequestLine("POST /v1/jobs/{jobId}/schedules")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    JobSchedule createJobSchedule(@Param("jobId") String jobId, JobSchedule jobSchedule) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}/schedules/{scheduleId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    JobSchedule getJobSchedule(@Param("jobId") String jobId, @Param("scheduleId") String scheduleId) throws DCOSException;
+
+    @RequestLine("PUT /v1/jobs/{jobId}/schedules/{scheduleId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void updateJobSchedule(@Param("jobId") String jobId, @Param("scheduleId") String scheduleId, JobSchedule jobSchedule) throws DCOSException;
+
+    @RequestLine("DELETE /v1/jobs/{jobId/schedules/{scheduleId}}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void deleteJobSchedule(@Param("jobId") String jobId, @Param("scheduleId") String scheduleId) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}/runs")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    List<JobRun> getJobRuns(@Param("jobId") String jobId) throws DCOSException;
+
+    @RequestLine("POST /v1/jobs/{jobId}/runs")
+    @Body("{}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    JobRun triggerJobRun(@Param("jobId") String jobId) throws DCOSException;
+
+    @RequestLine("GET /v1/jobs/{jobId}/runs/{runId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    JobRun getJobRun(@Param("jobId") String jobId, @Param("runId") String runId) throws DCOSException;
+
+    @RequestLine("POST /v1/jobs/{jobId}/runs/{runId}/action/stop")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void stopJobRun(@Param("jobId") String jobId, @Param("runId") String runId) throws DCOSException;
+
+    // Scheduled Jobs
+    @RequestLine("POST /v0/scheduled-jobs")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    Job createJobWithSchedules(Job job) throws DCOSException;
+
+    @RequestLine("PUT /v0/scheduled-jobs/{jobId}")
+    @Headers(HeaderUtils.METRONOME_API_SOURCE_HEADER)
+    void updateJobWithSchedules(@Param("jobId") String jobId, Job job) throws DCOSException;
+
     // Miscellaneous
     @RequestLine("GET /ping")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
@@ -239,12 +342,48 @@ public interface DCOS extends Marathon {
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetMetricsResponse getMetrics() throws DCOSException;
 
+    default Optional<InputStream> getAgentSandboxFileAsInputStream(final String agentId, final String path) throws DCOSException, IOException {
+        final feign.Response response = getAgentSandboxFile(agentId, path);
+
+        if (response.status() == 404 || response.body() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.body().asInputStream());
+    }
+
+    default Optional<String> getAgentSandboxFileAsString(final String agentId, final String path) throws DCOSException {
+        final feign.Response response = getAgentSandboxFile(agentId, path);
+
+        if (response.status() == 404 || response.body() == null) {
+            return Optional.empty();
+        }
+
+        try (final Reader reader = response.body().asReader()) {
+            return Optional.of(IOUtils.toString(reader));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    default GetJobResponse getJob(final String id, final List<String> embed) throws DCOSException {
+        return getJob(id, String.join(",", embed));
+    }
+
+    default List<GetJobResponse> getJobs(final List<String> embed) throws DCOSException {
+        return getJobs(String.join(",", embed));
+    }
+
     // Convenience methods for identifiable resources.
     default Optional<App> maybeApp(final String id) throws DCOSException {
         return resource(() -> getApp(id).getApp());
     }
 
-    default Optional<Group> maybeGroup(String id) throws DCOSException {
+    default Optional<Job> maybeJob(final String id) throws DCOSException {
+        return resource(() -> getJob(id));
+    }
+
+    default Optional<Group> maybeGroup(final String id) throws DCOSException {
         return resource(() -> getGroup(id));
     }
 
