@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
+import mesosphere.dcos.client.model.ListSecretsResponse;
 import org.apache.commons.io.IOUtils;
 
 import feign.Body;
@@ -52,6 +53,12 @@ public interface DCOS extends Marathon {
     @Headers(HeaderUtils.SECRETS_API_SOURCE_HEADER)
     Secret getSecret(@Param("secretStore") String secretStore,
                      @Param("secretPath") String secretPath)
+            throws DCOSException;
+
+    @RequestLine("GET /secrets/v1/secret/{secretStore}/{path}?list=true")
+    @Headers(HeaderUtils.SECRETS_API_SOURCE_HEADER)
+    ListSecretsResponse listSecrets(@Param("secretStore") String secretStore,
+                                   @Param("path") String path)
             throws DCOSException;
 
     // Mesos
