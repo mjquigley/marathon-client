@@ -36,6 +36,10 @@ public abstract class HttpResponseException extends RuntimeException {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues().toString();
+        return MoreObjects.toStringHelper(this)
+                .add("Message", message)
+                .add("Status", status)
+                .add("Details", details)
+                .omitNullValues().toString();
     }
 }
