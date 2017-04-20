@@ -18,6 +18,7 @@ import mesosphere.client.common.ThrowingSupplier;
 import mesosphere.dcos.client.model.AuthenticateResponse;
 import mesosphere.dcos.client.model.DCOSAuthCredentials;
 import mesosphere.dcos.client.model.Secret;
+import mesosphere.marathon.client.model.v2.GetAppsResponse;
 import mesosphere.mesos.client.model.MesosAgentState;
 import mesosphere.mesos.client.model.MesosMasterState;
 import mesosphere.metronome.client.model.v1.GetJobResponse;
@@ -58,7 +59,7 @@ public interface DCOS extends Marathon {
     @RequestLine("GET /secrets/v1/secret/{secretStore}/{path}?list=true")
     @Headers(HeaderUtils.SECRETS_API_SOURCE_HEADER)
     ListSecretsResponse listSecrets(@Param("secretStore") String secretStore,
-                                   @Param("path") String path)
+                                    @Param("path") String path)
             throws DCOSException;
 
     // Mesos
@@ -78,6 +79,10 @@ public interface DCOS extends Marathon {
 
 
     // Apps
+    @RequestLine("GET /v2/apps?embed={embed}")
+    @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
+    GetAppsResponse getApps(@Param("embed") String embed) throws DCOSException;
+
     /**
      * @param namespace - All apps under this group/subgroups will be returned. Example "/products/us-east"
      * @return
@@ -85,7 +90,18 @@ public interface DCOS extends Marathon {
      */
     @RequestLine("GET /v2/apps/{namespace}/*")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
-    GetAppNamespaceResponse getApps(@Param("namespace") String namespace) throws DCOSException;
+    GetAppNamespaceResponse getAppsForNamespace(@Param("namespace") String namespace) throws DCOSException;
+
+    /**
+     * @param namespace - All apps under this group/subgroups will be returned. Example "/products/us-east"
+     * @return
+     * @throws DCOSException
+     */
+    @RequestLine("GET /v2/apps/{namespace}/*?embed={embed}")
+    @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
+    GetAppNamespaceResponse getAppsForNamespace(@Param("namespace") String namespace,
+                                                @Param("embed") String embed)
+            throws DCOSException;
 
     @RequestLine("DELETE /v2/apps/{appId}?force={force}")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
@@ -373,6 +389,10 @@ public interface DCOS extends Marathon {
         }
     }
 
+    default GetAppsResponse getApps(final List<String> embed) throws DCOSException {
+        return getApps(String.join(",", embed));
+    }
+
     default GetJobResponse getJob(final String id, final List<String> embed) throws DCOSException {
         return getJob(id, String.join(",", embed));
     }
@@ -399,7 +419,11 @@ public interface DCOS extends Marathon {
     }
 
     default Optional<GetAppNamespaceResponse> maybeApps(final String namespace) throws DCOSException {
-        return resource(() -> getApps(namespace));
+        return resource(() -> getAppsForNamespace(namespace));
+    }
+
+    default Optional<GetAppNamespaceResponse> maybeApps(final String namespace, final List<String> embed) throws DCOSException {
+        return resource(() -> getAppsForNamespace(namespace, String.join(",", embed)));
     }
 
     /**
