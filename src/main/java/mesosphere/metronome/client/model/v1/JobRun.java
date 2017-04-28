@@ -11,7 +11,7 @@ public class JobRun {
     private String id;
     private String jobId;
     private String status;
-    private List<String> tasks;
+    private List<JobTask> tasks;
 
     public String getCompletedAt() {
         return completedAt;
@@ -53,18 +53,18 @@ public class JobRun {
         this.status = status;
     }
 
-    public List<String> getTasks() {
+    public List<JobTask> getTasks() {
         return tasks;
     }
 
-    public void addTask(String task) {
+    public void addTask(JobTask task) {
         if (this.tasks == null) {
             this.tasks = new ArrayList<>();
         }
         this.tasks.add(task);
     }
 
-    public void setTasks(List<String> tasks) {
+    public void setTasks(List<JobTask> tasks) {
         this.tasks = tasks;
     }
 
