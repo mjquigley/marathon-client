@@ -153,7 +153,7 @@ public interface DCOS extends Marathon {
 
     @RequestLine("GET /v2/apps/{appId}/versions")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
-    GetAppVersionResponse getAppVersion(@Param("id") String appId) throws DCOSException;
+    GetAppVersionResponse getAppVersion(@Param("appId") String appId) throws DCOSException;
 
     @RequestLine("GET /v2/apps/{appId}/versions/{version}")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
