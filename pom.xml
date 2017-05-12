@@ -9,20 +9,6 @@
 	<description>A Java API client for Mesosphere's Marathon.</description>
 	<url>https://github.com/cerner/marathon-client</url>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>aeon-snapshot</id>
-            <name>Aeon Snapshot Artifact Repository</name>
-            <url>http://repo.aeon.cerner.corp/snapshot-repo</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.netflix.feign</groupId>
@@ -136,8 +122,32 @@
 		<developer>
 			<name>Mohit Soni</name>
 		</developer>
+		<developer>
+			<name>Will Gorman</name>
+			<email>will.gorman@cerner.com</email>
+			<organization>Cerner</organization>
+			<organizationUrl>http://www.cerner.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Michael Tweten</name>
+			<email>michael.tweten@cerner.com</email>
+			<organization>Cerner</organization>
+			<organizationUrl>http://www.cerner.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Trevin Teacutter</name>
+			<email>trevin.teacutter@cerner.com</email>
+			<organization>Cerner</organization>
+			<organizationUrl>http://www.cerner.com</organizationUrl>
+		</developer>
 	</developers>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	
 	<properties>
 		<feign-version>8.18.0</feign-version>
@@ -199,7 +209,7 @@
 								</executions>
 								<configuration>
 										<instructions>
-												<Export-Package>mesosphere.marathon.client.*</Export-Package>
+												<Export-Package>mesosphere.*</Export-Package>
 												<Import-Package>*</Import-Package>
 										</instructions>
 								</configuration>
