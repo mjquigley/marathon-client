@@ -1,6 +1,5 @@
 *.class
 http.log*
-settings.xml
 
 # Package Files #
 *.jar
