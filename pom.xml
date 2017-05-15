@@ -4,10 +4,24 @@
 	<groupId>com.mesosphere</groupId>
 	<artifactId>marathon-client</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.1-SNAPSHOT</version>
+	<version>0.3.1-CERNER-SNAPSHOT</version>
 	<name>marathon-client</name>
 	<description>A Java API client for Mesosphere's Marathon.</description>
 	<url>https://github.com/mesosphere/marathon-client</url>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>aeon-snapshot</id>
+            <name>Aeon Snapshot Artifact Repository</name>
+            <url>http://repo.aeon.cerner.corp/snapshot-repo</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -124,13 +138,7 @@
 		</developer>
 	</developers>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
+	
 	<properties>
 		<feign-version>8.18.0</feign-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
