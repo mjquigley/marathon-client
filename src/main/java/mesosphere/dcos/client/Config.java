@@ -50,6 +50,9 @@ public class Config {
 		return caCertFile;
 	}
 
+	/**
+	 * @return the TLS versions used
+	 */
 	public TlsVersion[] getTlsVersions() {
 		return tlsVersions;
 	}
@@ -76,10 +79,14 @@ public class Config {
 		private String caCertFile;
 		private TlsVersion[] tlsVersions;
 
+		/**
+		 * Default Constructor
+		 */
 		public Builder() {
 		}
 
 		/**
+		 * Constructor
 		 * @param config Config to copy from
 		 */
 		public Builder(final Config config) {
@@ -90,7 +97,8 @@ public class Config {
 		}
 
 		/**
-		 * @return skips TLS verification
+		 * skips TLS verification
+		 * @return the builder
 		 */
 		public Builder insecureSkipTlsVerify() {
 			this.insecureSkipTlsVerify = true;
@@ -98,7 +106,8 @@ public class Config {
 		}
 
 		/**
-		 * @param insecureSkipTlsVerify whether TLS verification should be skipped.
+		 * @param insecureSkipTlsVerify whether TLS verification should be skipped
+		 * @return the builder
 		 */
 		public Builder withInsecureSkipTlsVerify(boolean insecureSkipTlsVerify) {
 			this.insecureSkipTlsVerify = insecureSkipTlsVerify;
@@ -107,6 +116,7 @@ public class Config {
 
 		/**
 		 * @param credentials the authentication credentials
+		 * @return the builder
 		 */
 		public Builder withCredentials(final DCOSAuthCredentials credentials) {
 			this.credentials = credentials;
@@ -114,8 +124,9 @@ public class Config {
 		}
 
 		/**
-		 * @return the CA certificate data (Base64 encoded) to add to the trust store. This should NOT include the
+		 * @param caCertData the CA certificate data (Base64 encoded) to add to the trust store. This should NOT include the
 		 * -----BEGIN CERTIFICATE----- or -----END CERTIFICATE----- markers
+		 * @return the builder
 		 */
 		public Builder withCaCertData(final String caCertData) {
 			this.caCertData = caCertData;
@@ -123,18 +134,26 @@ public class Config {
 		}
 
 		/**
-		 * @return path to the CA certificate to be added to the trust store.
+		 * @param caCertFile path to the CA certificate to be added to the trust store
+		 * @return the builder
 		 */
 		public Builder withCaCertFile(final String caCertFile) {
 			this.caCertFile = caCertFile;
 			return this;
 		}
 
+		/**
+		 * @param tlsVersions an array of TLS versions to use
+		 * @return the builder
+		 */
 		public Builder withTlsVersions(final TlsVersion... tlsVersions) {
 			this.tlsVersions = tlsVersions;
 			return this;
 		}
 
+		/**
+		 * @return an instance of {@link Config} using the current builder state
+		 */
 		public Config build() {
 			return new Config(this);
 		}
