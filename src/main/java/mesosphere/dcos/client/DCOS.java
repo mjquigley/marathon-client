@@ -85,8 +85,8 @@ public interface DCOS extends Marathon {
 
     /**
      * @param namespace - All apps under this group/subgroups will be returned. Example "/products/us-east"
-     * @return
-     * @throws DCOSException
+     * @return A {@link GetAppNamespaceResponse} containing all apps under the given namespace.
+     * @throws DCOSException if any error occurs during communication with the api.
      */
     @RequestLine("GET /v2/apps/{namespace}/*")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
@@ -94,8 +94,9 @@ public interface DCOS extends Marathon {
 
     /**
      * @param namespace - All apps under this group/subgroups will be returned. Example "/products/us-east"
-     * @return
-     * @throws DCOSException
+     * @param embed - Used to retrieve extra information regarding the app to be returned.
+     * @return A {@link GetAppNamespaceResponse} containing all apps under the given namespace.
+     * @throws DCOSException if any error occurs during communication with the api.
      */
     @RequestLine("GET /v2/apps/{namespace}/*?embed={embed}")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
@@ -428,7 +429,6 @@ public interface DCOS extends Marathon {
 
     /**
      * Calls the supplied {@code resourceSupplier} to retrieve a DCOS resource of type T.
-     * <p/>
      * If a {@link DCOSException} is thrown by the {@code resourceSupplier}, it will be caught. If
      * {@link DCOSException#getStatus()} is 404, then an empty optional will be returned. Any other
      * {@link DCOSException} will be rethrown.

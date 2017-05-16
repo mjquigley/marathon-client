@@ -20,7 +20,7 @@ public class ExternalVolume extends Volume {
         this.externalVolumeInfo = externalVolumeInfo;
     }
 
-    /** Proxies **/
+    // Proxies //
     public void setName(String name) {
         this.externalVolumeInfo.name = name;
     }
