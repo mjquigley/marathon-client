@@ -215,16 +215,16 @@ public interface DCOS extends Marathon {
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetTasksResponse getTasks(@Param("status") String status) throws DCOSException;
 
-    @RequestLine("DELETE /v2/tasks/delete?force={force}")
+    @RequestLine("POST /v2/tasks/delete?force={force}")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetTasksResponse deleteTask(@Param("force") boolean force, DeleteTaskCriteria deleteTaskBody) throws DCOSException;
 
-    @RequestLine("DELETE /v2/tasks/delete?force={force}&scale=true")
+    @RequestLine("POST /v2/tasks/delete?force={force}&scale=true")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetTasksResponse deleteTaskAndScale(@Param("force") boolean force, DeleteTaskCriteria deleteTaskBody)
             throws DCOSException;
 
-    @RequestLine("DELETE /v2/tasks/delete?force={force}&wipe=true")
+    @RequestLine("POST /v2/tasks/delete?force={force}&wipe=true")
     @Headers(HeaderUtils.MARATHON_API_SOURCE_HEADER)
     GetTasksResponse deleteTaskAndWipe(@Param("force") boolean force, DeleteTaskCriteria deleteTaskBody)
             throws DCOSException;
