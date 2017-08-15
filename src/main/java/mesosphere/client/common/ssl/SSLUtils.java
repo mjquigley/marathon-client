@@ -15,20 +15,23 @@
  */
 package mesosphere.client.common.ssl;
 
-import com.google.common.base.Strings;
-import mesosphere.dcos.client.Config;
-import okio.ByteString;
-
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
+import mesosphere.dcos.client.Config;
+import okio.ByteString;
 
 public final class SSLUtils {
 
@@ -57,7 +60,7 @@ public final class SSLUtils {
 						}
 					}
 			};
-		} else if (!Strings.isNullOrEmpty(certData) || !Strings.isNullOrEmpty(certFile)) {
+		} else if (!isNullOrEmpty(certData) || !isNullOrEmpty(certFile)) {
 			trustStore = createTrustStore(certData, certFile);
 		}
 		tmf.init(trustStore);
@@ -100,5 +103,9 @@ public final class SSLUtils {
 			trustStore.setCertificateEntry(alias, cert);
 		}
 		return trustStore;
+	}
+
+	private static boolean isNullOrEmpty(final String string) {
+		return string == null || string.isEmpty();
 	}
 }

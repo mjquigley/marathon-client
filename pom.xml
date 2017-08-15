@@ -31,11 +31,6 @@
 			<version>${gson-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>net.oauth.core</groupId>
 			<artifactId>oauth</artifactId>
 			<version>20100527</version>
